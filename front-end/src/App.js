@@ -1,6 +1,7 @@
 import './App.css';
-import Home from './pages/Home';
+import Table from './pages/Table';
 import Graph from './pages/Graph';
+import NavBar from './components/NavBar';
 import {
   BrowserRouter as Router,
   Switch,
@@ -11,8 +12,9 @@ function App() {
   return (
     <div className="App">
       <Router>
+        <NavBar/>
         <Switch>
-          <Route exact path="/" component={Home} />
+          <Route exact path="/" component={Table} />
           <Route path="/graph" component={Graph} />
         </Switch>
       </Router>

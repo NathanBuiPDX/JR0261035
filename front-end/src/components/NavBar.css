@@ -1,0 +1,12 @@
+
+.NavBar .navBarContents {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: start;
+}
+
+.NavBar .navBarLogo {
+	font-size: 25px;
+	font-weight: 600;
+}
