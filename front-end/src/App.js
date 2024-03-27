@@ -5,7 +5,8 @@ import NavBar from './components/NavBar';
 import {
   BrowserRouter as Router,
   Switch,
-  Route
+  Route,
+  Redirect
 } from "react-router-dom";
 
 function App() {
@@ -14,8 +15,9 @@ function App() {
       <Router>
         <NavBar/>
         <Switch>
-          <Route exact path="/" component={Table} />
-          <Route path="/graph" component={Graph} />
+          <Route exact path="/" render={props => <Redirect to="/table"/>}/>
+          <Route exact path="/table" component={Table} />
+          <Route exact path="/graph" component={Graph} />
         </Switch>
       </Router>
     </div>
