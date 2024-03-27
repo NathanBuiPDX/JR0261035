@@ -10,7 +10,6 @@ const NavBar = () => {
 
 	const handleRedirect = (e, link) => {
 		e.preventDefault();
-		console.log(link);
 		try {
 			history.push(link);
 		} catch (err) {
