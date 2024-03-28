@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import {API_DATA} from '../assets/API_DATA';
 
 const Table = () => {
     const [loading, setLoading] = useState(false);
@@ -20,24 +19,20 @@ const Table = () => {
         retrieveData();
     }, [lazyState]);
 
-    const retrieveData = () => {
+    const retrieveData = async () => {
         setLoading(true);
-        let result = API_DATA;
-        const resultKey = Object.keys(result).sort((a,b) => a - b);
-        // console.log("resultKey: ", resultKey)
-        result = resultKey.map(key => {
-            let processor = result[key];
-            processor.id = key;
-            return processor
-        })
-        console.log("result: ", result)
-        setProcessors(result);
-        setTotalRecords(result.length);
+        let result = await getProcessors({ lazyQuery: JSON.stringify(lazyState) });
+        setProcessors(result.data);
+        setTotalRecords(result.totalRecords);
         setLoading(false);
     }
 
+    const getProcessors = (params) => {
+        const queryParams = params ? Object.keys(params).map((k) => encodeURIComponent(k) + '=' + encodeURIComponent(params[k])).join('&') : '';
+        return fetch('http://localhost:8000/processors?' + queryParams).then((res) => res.json());
+    }
+
     const onPage = (event) => {
-        console.log("on page event: ", event)
         setlazyState(event);
     };
 
@@ -59,7 +54,7 @@ const Table = () => {
                     >
                 {/* <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} /> */}
                 <Column field="name" header="Name" sortable filter filterPlaceholder="Search" />
-                <Column field='Essentials.Product Collection' sortable header="Collection" filterField="country.name" />
+                <Column field='Essentials.Product Collection' sortable filter header="Collection" filterField="country.name" />
                 <Column field="Essentials.Status" sortable filter header="Status" filterPlaceholder="Search" />
                 <Column field="Essentials.Lithography" sortable header="Lithography" filter filterPlaceholder="Search" />
                 <Column field="Essentials.Vertical Segment" sortable header="Vertical Segment" filter filterPlaceholder="Search" />

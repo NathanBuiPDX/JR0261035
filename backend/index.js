@@ -17,6 +17,6 @@ app.use(express.json());
 app.use(helmet());
 app.use(morgan('common'));
 
-app.use('/table', processors);
+app.use('/processors', processors);
 
 app.listen(port, () => { console.log(`Server listening to port ${port}`) });
