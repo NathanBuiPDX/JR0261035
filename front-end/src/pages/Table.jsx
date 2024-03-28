@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { Dropdown } from 'primereact/dropdown';
 
+const statuses = ["Launched", "Discontinue"];
 const Table = () => {
     const [loading, setLoading] = useState(false);
     const [totalRecords, setTotalRecords] = useState(0);
@@ -12,7 +14,12 @@ const Table = () => {
         page: 1,
         sortField: null,
         sortOrder: null,
-        filters: {}
+        filters: {
+            collection: { value: null},
+            status: { value: null},
+            lithography: { value: null},
+            segment: { value: null}
+        }
     });
 
     useEffect(() => {
@@ -36,28 +43,35 @@ const Table = () => {
         setlazyState(event);
     };
 
-    const onSort = (event) => {
-        setlazyState(event);
-    };
+    const handleFilterChange = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        let id = e.target.id;
+        let value = e.target.value || null;
+        let newState = {...lazyState};
+        newState.filters[id].value = value;
+        setlazyState(newState);
+    }
 
-    const onFilter = (event) => {
-        event['first'] = 0;
-        setlazyState(event);
+    const filterDropdown = (id) => {
+        return (
+            <Dropdown id={id} value={lazyState.filters[id].value} options={statuses} onChange={handleFilterChange} placeholder="Select One" className="p-column-filter" showClear style={{ minWidth: '12rem' }} />
+        );
     };
 
     return (
         <div className="card">
             <DataTable value={processors} lazy filterDisplay="row" dataKey="id" paginator
                     first={lazyState.first} rows={10} totalRecords={totalRecords} onPage={onPage}
-                    onSort={onSort} sortField={lazyState.sortField} sortOrder={lazyState.sortOrder}
-                    onFilter={onFilter} filters={lazyState.filters} loading={loading} tableStyle={{ minWidth: '75rem' }}
+                    sortField={lazyState.sortField} sortOrder={lazyState.sortOrder}
+                    filters={lazyState.filters} loading={loading} tableStyle={{ minWidth: '75rem' }}
                     >
                 {/* <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} /> */}
-                <Column field="name" header="Name" sortable filter filterPlaceholder="Search" />
-                <Column field='Essentials.Product Collection' sortable filter header="Collection" filterField="country.name" />
-                <Column field="Essentials.Status" sortable filter header="Status" filterPlaceholder="Search" />
-                <Column field="Essentials.Lithography" sortable header="Lithography" filter filterPlaceholder="Search" />
-                <Column field="Essentials.Vertical Segment" sortable header="Vertical Segment" filter filterPlaceholder="Search" />
+                <Column field="name" header="Name" />
+                <Column field='Essentials.Product Collection' filter header="Collection" filterElement={() => filterDropdown("collection")} />
+                <Column field="Essentials.Status" filter header="Status" filterElement={() => filterDropdown("status")}/>
+                <Column field="Essentials.Lithography" header="Lithography" filter filterElement={() => filterDropdown("lithography")} />
+                <Column field="Essentials.Vertical Segment" header="Vertical Segment" filter filterElement={() => filterDropdown("segment")} />
             </DataTable>
         </div>
     );
