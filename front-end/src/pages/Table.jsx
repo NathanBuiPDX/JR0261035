@@ -13,9 +13,8 @@ const Table = () => {
         first: 0,
         rows: 10,
         page: 1,
-        search: null,
         filters: {
-            "Name": {value: null},
+            "name": {value: null},
             "Product Collection": { value: null},
             "Status": { value: null},
             "Lithography": { value: null},
@@ -61,6 +60,7 @@ const Table = () => {
     }
 
     const onPage = (event) => {
+        console.log("event: ", event)
         setlazyState(event);
     };
 
@@ -82,7 +82,7 @@ const Table = () => {
         searchTimeout = setTimeout(() => {
             let value = e.target.value || null;
             let newState = {...lazyState};
-            newState.search = value;
+            newState.filters["name"].value = value;
             setlazyState(newState);
         },500)
     }

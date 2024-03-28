@@ -30,7 +30,14 @@ const filterData = (data, field, value) => {
     console.log("value: ", value)
     let result = [];
     if (data && data.length > 0) {
-        result = data.filter(e => e.Essentials[field] === value);
+        result = data.filter(e => {
+            if (field === "name" && value.trim() !== '') {
+                let lowerCaseName = e[field].toLowerCase();
+                let searchString = value.toLowerCase();
+                return lowerCaseName.includes(searchString);
+            }
+            else return e.Essentials[field] === value
+        });
     }
     return result;
 }
