@@ -15,10 +15,10 @@ const Table = () => {
         sortField: null,
         sortOrder: null,
         filters: {
-            collection: { value: null},
-            status: { value: null},
-            lithography: { value: null},
-            segment: { value: null}
+            "Product Collection": { value: null},
+            "Status": { value: null},
+            "Lithography": { value: null},
+            "Vertical Segment": { value: null}
         }
     });
 
@@ -68,10 +68,10 @@ const Table = () => {
                     >
                 {/* <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} /> */}
                 <Column field="name" header="Name" />
-                <Column field='Essentials.Product Collection' filter header="Collection" filterElement={() => filterDropdown("collection")} />
-                <Column field="Essentials.Status" filter header="Status" filterElement={() => filterDropdown("status")}/>
-                <Column field="Essentials.Lithography" header="Lithography" filter filterElement={() => filterDropdown("lithography")} />
-                <Column field="Essentials.Vertical Segment" header="Vertical Segment" filter filterElement={() => filterDropdown("segment")} />
+                <Column field='Essentials.Product Collection' filter header="Collection" filterElement={() => filterDropdown("Product Collection")} />
+                <Column field="Essentials.Status" filter header="Status" filterElement={() => filterDropdown("Status")}/>
+                <Column field="Essentials.Lithography" header="Lithography" filter filterElement={() => filterDropdown("Lithography")} />
+                <Column field="Essentials.Vertical Segment" header="Vertical Segment" filter filterElement={() => filterDropdown("Vertical Segment")} />
             </DataTable>
         </div>
     );

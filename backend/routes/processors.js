@@ -2,6 +2,8 @@ const router = require('express').Router();
 const {API_DATA} = require('../assets/API_DATA');
 const url = require('url');
 
+
+
 const formatData = (data) => {
     let dataKey = Object.keys(data).sort((a,b) => a - b);
     let result = dataKey.map(key => {
@@ -25,10 +27,29 @@ const getPaginatedData = (query, data) => {
     return result;
 }
 
+const filterData = (data, field, value) => {
+    console.log("field: ", field);
+    console.log("value: ", value)
+    let result = [];
+    if (data && data.length > 0) {
+        result = data.filter(e => e.Essentials[field] === value);
+    }
+    return result;
+}
+
 router.get('/', async (req, res) => {
     try {
-        const data = formatData(API_DATA);
+        let data = formatData(API_DATA);
         const query = url.parse(req.url, true).query.lazyQuery ? JSON.parse(url.parse(req.url, true).query.lazyQuery) : url.parse(req.url, true).query;
+
+        if (query.filters) {
+            for (let fieldName in query.filters) {
+                if (query.filters[fieldName].value !== null) {
+                    data = filterData(data, fieldName, query.filters[fieldName].value);
+                }
+            }
+        }
+
         res.status(200).json(getPaginatedData(query, data));
     } catch(e) {
         console.log(e);
