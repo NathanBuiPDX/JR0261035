@@ -3,11 +3,11 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Dropdown } from 'primereact/dropdown';
 
-const statuses = ["Launched", "Discontinue"];
 const Table = () => {
     const [loading, setLoading] = useState(false);
     const [totalRecords, setTotalRecords] = useState(0);
     const [processors, setProcessors] = useState(null);
+    const [filterOptions, setFilterOptions] = useState({});
     const [lazyState, setlazyState] = useState({
         first: 0,
         rows: 10,
@@ -23,15 +23,34 @@ const Table = () => {
     });
 
     useEffect(() => {
-        retrieveData();
+        async function fetchData() {
+            setLoading(true);
+            try{
+                await retrieveFilterOptions();
+                await retrieveData();
+            } catch(e) {
+                console.log(e);
+            }
+            setLoading(false);
+        }
+        fetchData();
     }, [lazyState]);
 
     const retrieveData = async () => {
-        setLoading(true);
         let result = await getProcessors({ lazyQuery: JSON.stringify(lazyState) });
         setProcessors(result.data);
         setTotalRecords(result.totalRecords);
-        setLoading(false);
+    }
+    
+
+    const retrieveFilterOptions = async () => {
+        try{
+            let res = await fetch('http://localhost:8000/processors/uniqueEssentials');
+            res = await res.json();
+            setFilterOptions(res);
+        } catch(e) {
+            console.log(e)
+        }
     }
 
     const getProcessors = (params) => {
@@ -55,7 +74,7 @@ const Table = () => {
 
     const filterDropdown = (id) => {
         return (
-            <Dropdown id={id} value={lazyState.filters[id].value} options={statuses} onChange={handleFilterChange} placeholder="Select One" className="p-column-filter" showClear style={{ minWidth: '12rem' }} />
+            <Dropdown id={id} value={lazyState.filters[id].value} options={filterOptions[id]} onChange={handleFilterChange} placeholder="Select One" className="p-column-filter" showClear style={{ minWidth: '12rem' }} />
         );
     };
 

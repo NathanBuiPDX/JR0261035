@@ -2,8 +2,6 @@ const router = require('express').Router();
 const {API_DATA} = require('../assets/API_DATA');
 const url = require('url');
 
-
-
 const formatData = (data) => {
     let dataKey = Object.keys(data).sort((a,b) => a - b);
     let result = dataKey.map(key => {
@@ -51,6 +49,34 @@ router.get('/', async (req, res) => {
         }
 
         res.status(200).json(getPaginatedData(query, data));
+    } catch(e) {
+        console.log(e);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+})
+
+router.get('/uniqueEssentials', async (req, res) => {
+    try{
+        let data = formatData(API_DATA);
+        let status = [];
+        let collection = [];
+        let lithography = [];
+        let segment = [];
+        data.forEach(e => {
+            let essentials = e.Essentials;
+            if (essentials?.Status) status.push(essentials?.Status);
+            if (essentials?.Lithography) lithography.push(essentials?.Lithography);
+            if(essentials?.["Product Collection"]) collection.push(essentials?.["Product Collection"]);
+            if(essentials?.["Vertical Segment"]) segment.push(essentials?.["Vertical Segment"]);
+        })
+
+        let result = {};
+        result.Status = [...new Set(status)];
+        result.Lithography = [...new Set(lithography)];
+        result["Product Collection"] = [...new Set(collection)];
+        result["Vertical Segment"] = [...new Set(segment)];
+
+        res.status(200).json(result);
     } catch(e) {
         console.log(e);
         res.status(500).json({ message: 'Internal Server Error' });
