@@ -3,6 +3,8 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
+import { Tag } from 'primereact/tag';
+import axios from  'axios';
 
 const Table = () => {
     const [loading, setLoading] = useState(false);
@@ -24,6 +26,10 @@ const Table = () => {
     let searchTimeout = 0;
 
     useEffect(() => {
+        if (!localStorage.getItem("processors")) localStorage.setItem("processors", JSON.stringify({}));
+    }, [])
+
+    useEffect(() => {
         async function fetchData() {
             setLoading(true);
             try{
@@ -38,29 +44,40 @@ const Table = () => {
     }, [lazyState]);
 
     const retrieveData = async () => {
+        let updatedData = localStorage.getItem("processors");
+        updatedData = JSON.parse(updatedData);
         let result = await getProcessors({ lazyQuery: JSON.stringify(lazyState) });
-        setProcessors(result.data);
+        let returnedData = result.data;
+        
+        let updatedDataKeys = Object.keys(updatedData);
+        if (updatedDataKeys.length > 0) {
+            updatedDataKeys.forEach(key => {
+                let idx = returnedData.findIndex(e => e.id === key);
+                if (idx > -1) returnedData[idx] = updatedData[key];
+            })
+        }
+
+        setProcessors(returnedData);
         setTotalRecords(result.totalRecords);
     }
     
 
     const retrieveFilterOptions = async () => {
         try{
-            let res = await fetch('http://localhost:8000/processors/uniqueEssentials');
-            res = await res.json();
-            setFilterOptions(res);
+            let res = await axios.get('http://localhost:8000/processors/uniqueEssentials');
+            setFilterOptions(res.data);
         } catch(e) {
             console.log(e)
         }
     }
 
-    const getProcessors = (params) => {
+    const getProcessors = async (params) => {
         const queryParams = params ? Object.keys(params).map((k) => encodeURIComponent(k) + '=' + encodeURIComponent(params[k])).join('&') : '';
-        return fetch('http://localhost:8000/processors?' + queryParams).then((res) => res.json());
+        let result =  await axios.get('http://localhost:8000/processors?' + queryParams);
+        return result.data;
     }
 
     const onPage = (event) => {
-        console.log("event: ", event)
         setlazyState(event);
     };
 
@@ -77,7 +94,6 @@ const Table = () => {
     const handleSearchChange = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log(e.target.value);
         if (searchTimeout) clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
             let value = e.target.value || null;
@@ -97,18 +113,54 @@ const Table = () => {
         return <InputText placeholder='Search' onChange={handleSearchChange}/>
     }
 
+    const onRowEditComplete = (e) => {
+        try{
+            let { newData } = e;
+            let updatedData = localStorage.getItem("processors");
+            updatedData = JSON.parse(updatedData);
+            updatedData[newData.id] = newData;
+            localStorage.setItem("processors", JSON.stringify(updatedData));
+            //TODO: call PUT endpoint to update data
+        }
+        catch(e) {
+            console.log(e);
+            alert("Error updating table with processor: ", newData.name);
+        }
+        
+    };
+
+    const dropdownEditor = (options, id) => {
+        return (
+            <Dropdown
+                value={options.value}
+                options={filterOptions[id]}
+                onChange={(e) => options.editorCallback(e.value)}
+                placeholder="Select a Status"
+                itemTemplate={(option) => {
+                    return <Tag value={option}></Tag>;
+                }}
+            />
+        );
+    };
+
+    const textEditor = (options) => {
+        return <InputText type="text" value={options.value} onChange={(e) => options.editorCallback(e.target.value)} />;
+    };
+
     return (
         <div className="card">
             <DataTable value={processors} lazy filterDisplay="row" dataKey="id" paginator
                     first={lazyState.first} rows={10} totalRecords={totalRecords} onPage={onPage}
                     filters={lazyState.filters} loading={loading} tableStyle={{ minWidth: '75rem' }}
-                    >
+                    editMode="row" onRowEditComplete={onRowEditComplete}
+            >
                 {/* <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} /> */}
-                <Column field="name" header="Name" filter filterPlaceholder="Search" showFilterMenu={false} filterElement={searhInput}/>
-                <Column field='Essentials.Product Collection' showFilterMenu={false} filter header="Collection" filterElement={() => filterDropdown("Product Collection")} />
-                <Column field="Essentials.Status" showFilterMenu={false} filter header="Status" filterElement={() => filterDropdown("Status")}/>
-                <Column field="Essentials.Lithography" showFilterMenu={false} header="Lithography" filter filterElement={() => filterDropdown("Lithography")} />
-                <Column field="Essentials.Vertical Segment" showFilterMenu={false} header="Vertical Segment" filter filterElement={() => filterDropdown("Vertical Segment")} />
+                <Column field="name" header="Name" editor={(options) => textEditor(options)} filter filterPlaceholder="Search" showFilterMenu={false} filterElement={searhInput}/>
+                <Column field='Essentials.Product Collection' editor={(options) => dropdownEditor(options, "Product Collection")} showFilterMenu={false} filter header="Collection" filterElement={() => filterDropdown("Product Collection")} />
+                <Column field="Essentials.Status" editor={(options) => dropdownEditor(options, "Status")} showFilterMenu={false} filter header="Status" filterElement={() => filterDropdown("Status")}/>
+                <Column field="Essentials.Lithography" editor={(options) => dropdownEditor(options, "Lithography")} showFilterMenu={false} header="Lithography" filter filterElement={() => filterDropdown("Lithography")} />
+                <Column field="Essentials.Vertical Segment" editor={(options) => dropdownEditor(options, "Vertical Segment")} showFilterMenu={false} header="Vertical Segment" filter filterElement={() => filterDropdown("Vertical Segment")} />
+                <Column rowEditor={true} headerStyle={{ width: '10%', minWidth: '8rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
             </DataTable>
         </div>
     );
