@@ -113,18 +113,19 @@ const Table = () => {
         return <InputText placeholder='Search' onChange={handleSearchChange}/>
     }
 
-    const onRowEditComplete = (e) => {
+    const onRowEditComplete = async (e) => {
         try{
             let { newData } = e;
             let updatedData = localStorage.getItem("processors");
             updatedData = JSON.parse(updatedData);
             updatedData[newData.id] = newData;
             localStorage.setItem("processors", JSON.stringify(updatedData));
-            //TODO: call PUT endpoint to update data
+            const config = { headers: {'Content-Type': 'application/json'} };
+            await axios.put(`http://localhost:8000/processors/${newData.id}`, newData, config);
         }
         catch(e) {
             console.log(e);
-            alert("Error updating table with processor: ", newData.name);
+            alert("Error updating table", e.message);
         }
         
     };

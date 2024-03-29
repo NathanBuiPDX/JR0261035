@@ -62,6 +62,22 @@ router.get('/', async (req, res) => {
     }
 })
 
+// Mocking update table behavior for this PUT call. Not update any data 
+// since database is not implemented for this backend.
+// Changes will be saved in localStorage at frontend side
+router.put('/:processorId', async (req, res) => {
+    try {
+       let processorId = req.params.processorId;
+       let data = API_DATA;
+       console.log("Payload: ", req.body);
+       if (!data[processorId]) res.status(404).json({message: "Failed to update data. Proccessor not found!"});
+        else res.status(200).json({message: "Updated processor successfully"});
+    } catch(e) {
+        console.log(e);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+})
+
 router.get('/uniqueEssentials', async (req, res) => {
     try{
         let data = formatData(API_DATA);
