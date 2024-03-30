@@ -23,52 +23,52 @@
   width: 90%;
 }
 
-.tableSelectedRow {
+.TablePage .tableSelectedRow {
   background-color: rgba(25, 118, 210, 0.7);
   color: white;
   font-weight: 600;
 }
 
-.detailsSection {
+.TablePage .detailsSection {
   background-color: rgba(128, 128, 128, 0.15);
   padding: 15px;
   margin: 0 20px 20px 20px;
 }
 
-.detailsSectionHeader {
+.TablePage .detailsSectionHeader {
   font-size: 16px;
   font-weight: 700;
   color: rgba(25, 118, 210);
 }
-.detailsSectionSubHeader {
+.TablePage .detailsSectionSubHeader {
   font-weight: 600;
   color: rgba(25, 118, 210);
   font-size: 14px;
   text-align: left;
   margin: 5px 0;
 }
-.detailsRow {
+.TablePage .detailsRow {
   display: flex;
   flex-direction: row;
 }
 
-.detailsSectionData {
+.TablePage .detailsSectionData {
   display: flex;
   flex-direction: column;
   text-align: center;
   margin: 0 auto;
 }
 
-.detailsRowKey {
+.TablePage .detailsRowKey {
   font-weight: 500;
   width: 250px;
   text-align: left;
 }
 
-.detailsSectionSubSection {
+.TablePage .detailsSectionSubSection {
   margin-left: 10px;
 }
 
-.detailsRowValueExtra {
+.TablePage .detailsRowValueExtra {
   margin-left: 10px;
 }

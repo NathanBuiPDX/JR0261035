@@ -217,7 +217,6 @@ const Table = () => {
   };
 
   const handleSelectionChange = (e) => {
-    console.log("seletion change: ", e);
     setSelectedProcessor(e.value);
   };
 
@@ -234,7 +233,6 @@ const Table = () => {
   const renderDetails = (data) => {
     let keys = Object.keys(data);
     keys = keys.filter((key) => key !== "id" && key !== "name");
-    console.log("keys: ", keys);
     return (
       <div className="detailsSectionData">
         <div className="detailsRow">
