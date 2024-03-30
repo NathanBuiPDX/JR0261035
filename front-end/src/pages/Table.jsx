@@ -127,7 +127,7 @@ const Table = () => {
         placeholder="Select One"
         className="filterDropdown"
         showClear
-        style={{ minWidth: "12rem" }}
+        style={{ minWidth: "2rem" }}
       />
     );
   };
@@ -236,6 +236,7 @@ const Table = () => {
           filterPlaceholder="Search"
           showFilterMenu={false}
           filterElement={searhInput}
+          headerStyle={{ width: "50%" }}
         />
         <Column
           field="Essentials.Product Collection"
@@ -244,6 +245,7 @@ const Table = () => {
           filter
           header="Collection"
           filterElement={() => filterDropdown("Product Collection")}
+          headerStyle={{ width: "20%" }}
         />
         <Column
           field="Essentials.Status"
@@ -252,6 +254,7 @@ const Table = () => {
           filter
           header="Status"
           filterElement={() => filterDropdown("Status")}
+          headerStyle={{ width: "20%" }}
         />
         <Column
           field="Essentials.Lithography"
@@ -260,6 +263,7 @@ const Table = () => {
           header="Lithography"
           filter
           filterElement={() => filterDropdown("Lithography")}
+          headerStyle={{ width: "10%" }}
         />
         <Column
           field="Essentials.Vertical Segment"
@@ -268,6 +272,7 @@ const Table = () => {
           header="Vertical Segment"
           filter
           filterElement={() => filterDropdown("Vertical Segment")}
+          style={{ width: "10%" }}
         />
         <Column
           filter
