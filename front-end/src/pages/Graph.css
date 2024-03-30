@@ -1,7 +1,11 @@
 .GraphPage {
-    width: 100%;
+  width: 100%;
 }
 
-.pieChart{
-    height: 50vh;
+.pieChart {
+  height: 50vh;
+}
+
+.barChart {
+  height: 50vh;
 }
