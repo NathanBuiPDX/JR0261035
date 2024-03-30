@@ -15,6 +15,7 @@ const Table = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   const [processors, setProcessors] = useState(null);
   const [filterOptions, setFilterOptions] = useState({});
+  const [selectedProcessor, setSelectedProcessor] = useState({});
   const [lazyState, setlazyState] = useState({
     first: 0,
     rows: 10,
@@ -133,7 +134,13 @@ const Table = () => {
   };
 
   const searhInput = (e) => {
-    return <InputText placeholder="Search" onChange={handleSearchChange} />;
+    return (
+      <InputText
+        placeholder="Search"
+        onChange={handleSearchChange}
+        style={{ minWidth: "200px" }}
+      />
+    );
   };
 
   const onRowEditComplete = async (e) => {
@@ -175,6 +182,7 @@ const Table = () => {
         type="text"
         value={options.value}
         onChange={(e) => options.editorCallback(e.target.value)}
+        className="inputNameField"
       />
     );
   };
@@ -208,6 +216,60 @@ const Table = () => {
     );
   };
 
+  const handleSelectionChange = (e) => {
+    console.log("seletion change: ", e);
+    setSelectedProcessor(e.value);
+  };
+
+  const renderDetailsSection = () => {
+    return (
+      <div className="detailsSection">
+        <div className="detailsSectionHeader">Processor Details</div>
+        {selectedProcessor?.id
+          ? renderDetails(selectedProcessor)
+          : renderEmptySectionDetails()}
+      </div>
+    );
+  };
+  const renderDetails = (data) => {
+    let keys = Object.keys(data);
+    keys = keys.filter((key) => key !== "id" && key !== "name");
+    console.log("keys: ", keys);
+    return (
+      <div className="detailsSectionData">
+        <div className="detailsRow">
+          <div className="detailsRowKey">Processor ID:</div>
+          <div className="detailsRowValueExtra">{data.id}</div>
+        </div>
+        <div className="detailsRow">
+          <div className="detailsRowKey">Processor Name:</div>
+          <div className="detailsRowValueExtra">{data.name}</div>
+        </div>
+        {keys.map((key) => {
+          return (
+            <div className="detailsKey" key={key}>
+              <div className="detailsSectionSubHeader">{key}</div>
+              <div className="detailsSectionSubSection">
+                {Object.keys(data[key]).map((subKey) => {
+                  return (
+                    <div className="detailsRow">
+                      <div className="detailsRowKey">{subKey}:</div>
+                      <div className="detailsRowValue">{data[key][subKey]}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const renderEmptySectionDetails = () => {
+    return <div>Please select a row in the table for more information</div>;
+  };
+
   return (
     <div className="card TablePage">
       <DataTable
@@ -222,10 +284,18 @@ const Table = () => {
         onPage={onPage}
         filters={lazyState.filters}
         loading={loading}
-        tableStyle={{ minWidth: "75rem" }}
+        tableStyle={{ minWidth: "30rem" }}
         editMode="row"
         onRowEditComplete={onRowEditComplete}
         className="table"
+        stripedRows
+        rowSelection
+        selectionMode="single"
+        selection={selectedProcessor}
+        onSelectionChange={handleSelectionChange}
+        rowClassName={(rowData) => {
+          if (rowData?.id === selectedProcessor?.id) return "tableSelectedRow";
+        }}
       >
         {/* <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} /> */}
         <Column
@@ -283,6 +353,7 @@ const Table = () => {
           bodyStyle={{ textAlign: "center" }}
         ></Column>
       </DataTable>
+      {renderDetailsSection()}
     </div>
   );
 };
