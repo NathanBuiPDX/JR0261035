@@ -1,3 +1,7 @@
-.pieChart {
-    width: 40% !important;
+.GraphPage {
+    width: 100%;
+}
+
+.pieChart{
+    height: 50vh;
 }
