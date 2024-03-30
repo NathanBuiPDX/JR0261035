@@ -1,11 +1,15 @@
 .GraphPage {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .pieChart {
-  height: 50vh;
+  height: 40vh;
 }
 
 .barChart {
-  height: 50vh;
+  height: 40vh;
+  margin: 15px 20px;
 }

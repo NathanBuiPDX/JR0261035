@@ -139,6 +139,13 @@ const Graph = () => {
     let data = generateBarData(processors, totalRecords);
     const options = {
       plugins: {
+        title: {
+          display: true,
+          text: "Average Frequency and Lithography Size from Processor Segments",
+          font: {
+            size: 18,
+          },
+        },
         legend: {
           position: "bottom",
           labels: {
@@ -183,7 +190,7 @@ const Graph = () => {
     };
     return (
       <div className="barChart">
-        <Bar data={data} options={options} width={"100%"} />
+        <Bar data={data} options={options} width={"70%"} />
       </div>
     );
   };
@@ -225,6 +232,13 @@ const Graph = () => {
     let data = generatePieData(processors, totalRecords);
     const options = {
       plugins: {
+        title: {
+          display: true,
+          text: "Processor Status",
+          font: {
+            size: 18,
+          },
+        },
         legend: {
           position: "bottom",
           labels: {
@@ -268,9 +282,8 @@ const Graph = () => {
 
   return (
     <div className="GraphPage">
-      Graph page test
-      {renderPieGraph()}
       {renderBarChart()}
+      {renderPieGraph()}
     </div>
   );
 };

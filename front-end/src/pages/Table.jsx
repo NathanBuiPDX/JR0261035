@@ -5,6 +5,10 @@ import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { Tag } from "primereact/tag";
 import axios from "axios";
+import { Button } from "primereact/button";
+import { mkConfig, generateCsv, download } from "export-to-csv";
+import { flattenObject } from "../assets/Helper";
+import "./Table.css";
 
 const Table = () => {
   const [loading, setLoading] = useState(false);
@@ -121,7 +125,7 @@ const Table = () => {
         options={filterOptions[id]}
         onChange={handleFilterChange}
         placeholder="Select One"
-        className="p-column-filter"
+        className="filterDropdown"
         showClear
         style={{ minWidth: "12rem" }}
       />
@@ -175,8 +179,37 @@ const Table = () => {
     );
   };
 
+  const exportCSV = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    let tempArr = [...processors];
+    let flattenedObjArr = [];
+    for (let data of tempArr) {
+      flattenedObjArr.push(flattenObject(data));
+    }
+    const csvConfig = mkConfig({
+      useKeysAsHeaders: true,
+      filename: `Processors Data page-${lazyState.page + 1}`,
+    });
+    const csv = generateCsv(csvConfig)(flattenedObjArr);
+    download(csvConfig)(csv);
+  };
+
+  const renderExportButton = () => {
+    return (
+      <Button
+        type="button"
+        icon="pi pi-file"
+        className="downloadButton"
+        rounded
+        onClick={exportCSV}
+        data-pr-tooltip="CSV"
+      />
+    );
+  };
+
   return (
-    <div className="card">
+    <div className="card TablePage">
       <DataTable
         value={processors}
         lazy
@@ -192,6 +225,7 @@ const Table = () => {
         tableStyle={{ minWidth: "75rem" }}
         editMode="row"
         onRowEditComplete={onRowEditComplete}
+        className="table"
       >
         {/* <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} /> */}
         <Column
@@ -236,6 +270,9 @@ const Table = () => {
           filterElement={() => filterDropdown("Vertical Segment")}
         />
         <Column
+          filter
+          showFilterMenu={false}
+          filterElement={() => renderExportButton()}
           rowEditor={true}
           headerStyle={{ width: "10%", minWidth: "8rem" }}
           bodyStyle={{ textAlign: "center" }}

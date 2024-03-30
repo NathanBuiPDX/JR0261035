@@ -15,7 +15,7 @@ const formatData = (data) => {
 
 const getPaginatedData = (query, data) => {
   let result = { totalRecords: data.length };
-  if (query?.first && query?.rows) {
+  if (typeof query?.first === "number" && typeof query?.rows === "number") {
     let first = parseInt(query.first);
     let rows = parseInt(query.rows);
     let temp = data.slice(first, first + rows);
