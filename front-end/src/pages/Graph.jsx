@@ -83,7 +83,7 @@ const Graph = () => {
     
     return (
         <div>
-            Graph page
+            Graph page test
         </div>
     );
 };
