@@ -16,6 +16,8 @@ const Table = () => {
   const [processors, setProcessors] = useState(null);
   const [filterOptions, setFilterOptions] = useState({});
   const [selectedProcessor, setSelectedProcessor] = useState({});
+  const [comparedProcessor, setComparedProcessor] = useState({});
+  const [comparing, setComparing] = useState(false);
   const [lazyState, setlazyState] = useState({
     first: 0,
     rows: 10,
@@ -125,10 +127,10 @@ const Table = () => {
         value={lazyState.filters[id].value}
         options={filterOptions[id]}
         onChange={handleFilterChange}
-        placeholder="Select One"
+        placeholder="Select"
         className="filterDropdown"
         showClear
-        style={{ minWidth: "2rem" }}
+        style={{ minWidth: "100px" }}
       />
     );
   };
@@ -211,51 +213,123 @@ const Table = () => {
         className="downloadButton"
         rounded
         onClick={exportCSV}
-        data-pr-tooltip="CSV"
       />
     );
   };
 
+  const renderCompareButton = () => {
+    return (
+      <Button
+        type="button"
+        className="compareButton"
+        onClick={handleCompare}
+        label={comparing ? "Cancel" : "Compare"}
+        severity="help"
+      />
+    );
+  };
+
+  const handleCompare = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setComparing(!comparing);
+    setComparedProcessor({});
+  };
+
   const handleSelectionChange = (e) => {
-    setSelectedProcessor(e.value);
+    if (comparing) setComparedProcessor(e.value);
+    else setSelectedProcessor(e.value);
   };
 
   const renderDetailsSection = () => {
     return (
       <div className="detailsSection">
         <div className="detailsSectionHeader">Processor Details</div>
-        {selectedProcessor?.id
-          ? renderDetails(selectedProcessor)
-          : renderEmptySectionDetails()}
+        {selectedProcessor?.id ? renderDetails() : renderEmptySectionDetails()}
       </div>
     );
   };
-  const renderDetails = (data) => {
-    let keys = Object.keys(data);
+  const renderDetails = () => {
+    let keys = Object.keys(selectedProcessor);
+    if (comparedProcessor?.id) {
+      let comparedKeys = Object.keys(comparedProcessor);
+      keys = [...new Set([...keys, ...comparedKeys])];
+    }
     keys = keys.filter((key) => key !== "id" && key !== "name");
     return (
       <div className="detailsSectionData">
-        <div className="detailsRow">
-          <div className="detailsRowKey">Processor ID:</div>
-          <div className="detailsRowValueExtra">{data.id}</div>
-        </div>
-        <div className="detailsRow">
-          <div className="detailsRowKey">Processor Name:</div>
-          <div className="detailsRowValueExtra">{data.name}</div>
+        <div className="detailsSectionSubSection">
+          <div className="detailsSectionSubSectionSelected">
+            <div className="detailsRow">
+              <div className="detailsRowKey">Processor ID:</div>
+              <div className="detailsRowValueExtra">{selectedProcessor.id}</div>
+            </div>
+            <div className="detailsRow">
+              <div className="detailsRowKey">Processor Name:</div>
+              <div className="detailsRowValueExtra">
+                {selectedProcessor.name}
+              </div>
+            </div>
+          </div>
+          {comparedProcessor?.id && (
+            <div className="detailsSectionSubSectionCompared">
+              <div className="detailsRow">
+                <div className="detailsRowKey">Processor ID:</div>
+                <div className="detailsRowValueExtra">
+                  {comparedProcessor.id}
+                </div>
+              </div>
+              <div className="detailsRow">
+                <div className="detailsRowKey">Processor Name:</div>
+                <div className="detailsRowValueExtra">
+                  {comparedProcessor.name}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         {keys.map((key) => {
           return (
             <div className="detailsKey" key={key}>
-              <div className="detailsSectionSubHeader">{key}</div>
+              <div
+                className={`detailsSectionSubHeader ${
+                  comparedProcessor?.id ? "alignMiddle" : ""
+                }`}
+              >
+                {key}
+              </div>
               <div className="detailsSectionSubSection">
-                {Object.keys(data[key]).map((subKey) => {
-                  return (
-                    <div className="detailsRow">
-                      <div className="detailsRowKey">{subKey}:</div>
-                      <div className="detailsRowValue">{data[key][subKey]}</div>
-                    </div>
-                  );
-                })}
+                <div className="detailsSectionSubSectionSelected">
+                  {selectedProcessor[key]
+                    ? Object.keys(selectedProcessor[key]).map((subKey) => {
+                        return (
+                          <div className="detailsRow" key={subKey}>
+                            <div className="detailsRowKey">{subKey}:</div>
+                            <div className="detailsRowValue">
+                              {selectedProcessor[key][subKey]}
+                            </div>
+                          </div>
+                        );
+                      })
+                    : ""}
+                </div>
+                {comparedProcessor?.id && (
+                  <div className="detailsSectionSubSectionCompared">
+                    {comparedProcessor[key]
+                      ? Object.keys(comparedProcessor[key]).map((subKey) => {
+                          return (
+                            <div className="detailsRow" key={subKey}>
+                              <div className="detailsRowKey">{subKey}:</div>
+                              <div className="detailsRowValue">
+                                {comparedProcessor[key][subKey]}
+                              </div>
+                            </div>
+                          );
+                        })
+                      : ""}
+                  </div>
+                )}
               </div>
             </div>
           );
@@ -282,20 +356,28 @@ const Table = () => {
         onPage={onPage}
         filters={lazyState.filters}
         loading={loading}
-        tableStyle={{ minWidth: "30rem" }}
         editMode="row"
         onRowEditComplete={onRowEditComplete}
         className="table"
         stripedRows
-        rowSelection
         selectionMode="single"
         selection={selectedProcessor}
         onSelectionChange={handleSelectionChange}
+        tableStyle={{ tableLayout: "fixed" }}
         rowClassName={(rowData) => {
           if (rowData?.id === selectedProcessor?.id) return "tableSelectedRow";
+          if (comparing && rowData?.id === comparedProcessor?.id)
+            return "tableComparedRow";
         }}
       >
-        {/* <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} /> */}
+        <Column
+          field="id"
+          header="ID"
+          filter
+          showFilterMenu={false}
+          filterElement={() => renderCompareButton()}
+          headerStyle={{ width: "100px" }}
+        />
         <Column
           field="name"
           header="Name"
@@ -304,7 +386,7 @@ const Table = () => {
           filterPlaceholder="Search"
           showFilterMenu={false}
           filterElement={searhInput}
-          headerStyle={{ width: "50%" }}
+          headerStyle={{ width: "400px" }}
         />
         <Column
           field="Essentials.Product Collection"
@@ -313,7 +395,7 @@ const Table = () => {
           filter
           header="Collection"
           filterElement={() => filterDropdown("Product Collection")}
-          headerStyle={{ width: "20%" }}
+          headerStyle={{ width: "200px" }}
         />
         <Column
           field="Essentials.Status"
@@ -322,7 +404,7 @@ const Table = () => {
           filter
           header="Status"
           filterElement={() => filterDropdown("Status")}
-          headerStyle={{ width: "20%" }}
+          headerStyle={{ width: "180px" }}
         />
         <Column
           field="Essentials.Lithography"
@@ -331,16 +413,16 @@ const Table = () => {
           header="Lithography"
           filter
           filterElement={() => filterDropdown("Lithography")}
-          headerStyle={{ width: "10%" }}
+          headerStyle={{ width: "120px" }}
         />
         <Column
           field="Essentials.Vertical Segment"
           editor={(options) => dropdownEditor(options, "Vertical Segment")}
           showFilterMenu={false}
-          header="Vertical Segment"
+          header="Segment"
           filter
           filterElement={() => filterDropdown("Vertical Segment")}
-          style={{ width: "10%" }}
+          style={{ width: "100px" }}
         />
         <Column
           filter

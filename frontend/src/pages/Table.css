@@ -2,7 +2,7 @@
   font-size: 12px;
 }
 .TablePage .downloadButton {
-  margin-left: 45px;
+  margin-left: 40px;
 }
 
 .TablePage .table {
@@ -45,7 +45,8 @@
   color: rgba(25, 118, 210);
   font-size: 14px;
   text-align: left;
-  margin: 5px 0;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 .TablePage .detailsRow {
   display: flex;
@@ -67,8 +68,29 @@
 
 .TablePage .detailsSectionSubSection {
   margin-left: 10px;
+  display: flex;
+  flex-direction: row;
 }
 
 .TablePage .detailsRowValueExtra {
   margin-left: 10px;
+}
+
+.compareButton {
+  width: 80px;
+  padding: 10px;
+}
+
+.tableComparedRow {
+  background-color: #a855f7;
+  color: white;
+  font-weight: 600;
+}
+
+.detailsSectionSubSectionSelected {
+  min-width: 50%;
+}
+
+.alignMiddle {
+  margin-left: calc(40%);
 }
