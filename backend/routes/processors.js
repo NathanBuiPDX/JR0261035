@@ -25,8 +25,6 @@ const getPaginatedData = (query, data) => {
 };
 
 const filterData = (data, field, value) => {
-  console.log("field: ", field);
-  console.log("value: ", value);
   let result = [];
   if (data && data.length > 0) {
     result = data.filter((e) => {
@@ -69,7 +67,6 @@ router.put("/:processorId", async (req, res) => {
   try {
     let processorId = req.params.processorId;
     let data = API_DATA;
-    console.log("Payload: ", req.body);
     if (!data[processorId])
       res
         .status(404)
