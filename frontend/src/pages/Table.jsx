@@ -225,6 +225,7 @@ const Table = () => {
         onClick={handleCompare}
         label={comparing ? "Cancel" : "Compare"}
         severity="help"
+        disabled={!selectedProcessor?.id}
       />
     );
   };
